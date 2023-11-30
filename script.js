@@ -41,6 +41,8 @@ const aiSearchPayload = {
     ]
 }
 
+var aiSearchResponse = {}
+
 const loadingMessage = document.getElementById('loading-message');
 
 async function sendMessage() {
@@ -65,6 +67,21 @@ async function sendMessage() {
 
 
     // TODO - update the payload with some context from the AI Search call
+    updateOpenaiPayloadChatHistory("system", "Use the provided articles delimited by ### to answer questions. If the answer cannot be found in the articles, write \"I could not find an answer.\"")
+
+    // Access the "value" array in the JSON
+    const results = aiSearchResponse.value;
+
+    var chat_context_article = "";
+    // Loop through each search result and map the description to the open ai chat payload
+    for (const result of results) {
+        //const description = result.Description;
+        //console.log(description);
+        // TODO make this generic so it is not tightly coupled to the json results from search...
+        chat_context_article += "Hotel name: " + result.HotelName + ". " + result.Description + "###";
+  
+    }
+    updateOpenaiPayloadChatHistory("user", chat_context_article)
 
     // Call OpenAI API for response
     await callOpenAI(userInput);
@@ -170,11 +187,10 @@ async function callAzureSearch() {
         const data = await response.json();
 
         // Handle the data from the response
-        console.log("AI search response: " + JSON.stringify(data, null, 2));
+        // console.log("AI search response: " + JSON.stringify(data, null, 2));
 
-        // TODO map the search data into the completions object to fulfil RAG
-
-        console.log("aiSearchPayload: " + JSON.stringify(data, null, 2));
+        // Map the response data to a global var
+        aiSearchResponse = data;
 
     } catch (error) {
         console.error('Fetch error:', error);
@@ -208,7 +224,6 @@ function updateOpenaiPayloadChatHistory(role, message) {
     }
 
 }
-
 
 
 function displayLoadingMessage() {

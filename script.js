@@ -4,8 +4,8 @@ const openaiEndpoint = 'https://sew-openai.openai.azure.com/openai/deployments/S
 const openaiEmbeddingsEndpoint = 'https://openaikofaxtest1.openai.azure.com/openai/deployments/embeddings/embeddings?api-version=2023-08-01-preview';
 const openaiEmbeddingsApiKey = '81b698241e364fc2aef4c3a0a40c05a9';
 
-const azureSearchEndpoint = 'https://openaikofaxtest1.openai.azure.com/';
-const azureSearchApiKey = '81b698241e364fc2aef4c3a0a40c05a9';
+const azureSearchEndpoint = 'https://ai-search-tsc.search.windows.net/indexes/hotels-vector-quickstart/docs/search?api-version=2023-11-01';
+const azureSearchApiKey = 'Cd1qBeD9EmhiZjC1dMeHneoVlmKV08pp5sCaONltTtAzSeBYUp1V';
 
 
 
@@ -32,7 +32,7 @@ const aiSearchPayload = {
     "select": "HotelId, HotelName, Description, Category",
     "vectorQueries": [
         {
-            "vector": [0.01944167, 0.0040178085, -0.007816401],  
+            "vector": [0.01944167, 0.0040178085, -0.007816401],
             "k": 7,
             "fields": "DescriptionVector",
             "kind": "vector",
@@ -43,7 +43,7 @@ const aiSearchPayload = {
 
 const loadingMessage = document.getElementById('loading-message');
 
-function sendMessage() {
+async function sendMessage() {
 
     // Get user input
     const userInput = document.getElementById('input-message').value;
@@ -57,14 +57,21 @@ function sendMessage() {
     // Add user message to chat history
     updateChatHistory('User: ' + userInput);
 
-    // Call OpenAI API for response
-    callOpenAI(userInput);
-
     // Call OpenAI API for Embeddings
-    openAiEmbeddingsApiCall(userInput);
+    await openAiEmbeddingsApiCall(userInput);
+
+    // Get the context information from 
+    await callAzureSearch();
+
+
+    // TODO - update the payload with some context from the AI Search call
+
+    // Call OpenAI API for response
+    await callOpenAI(userInput);
 }
 
 async function callOpenAI(userInput) {
+    console.log("Calling the OpenAI completions api");
     // Make API request to OpenAI
     // Handle the response and call Azure Cognitive Search for additional information
     //openAiPayload.messages[0].content = userInput;
@@ -81,7 +88,7 @@ async function callOpenAI(userInput) {
 
 async function openAiApiCall() {
     try {
-        console.log("\n\nCalling OpenAI with the payload: " + JSON.stringify(openAiPayload, null, 2) + "\n\n\n");
+        //console.log("\n\nCalling OpenAI with the payload: " + JSON.stringify(openAiPayload, null, 2) + "\n\n\n");
         const response = await fetch(openaiEndpoint, {
             method: 'POST',
             headers: {
@@ -98,7 +105,7 @@ async function openAiApiCall() {
         const data = await response.json();
 
         // Handle the data from the response
-        console.log("Open AI response: " + JSON.stringify(data, null, 2));
+        //console.log("Open AI response: " + JSON.stringify(data, null, 2));
 
         // Extract the text value of the "content" field
         const contentText = data.choices[0].message.content;
@@ -112,7 +119,7 @@ async function openAiApiCall() {
 async function openAiEmbeddingsApiCall(message) {
     aiVectorisePayload.input = message;
     try {
-        console.log("\n\nCalling OpenAI Embeddings with the payload: " + JSON.stringify(aiVectorisePayload, null, 2) + "\n\n\n");
+        //console.log("\n\nCalling OpenAI Embeddings with the payload: " + JSON.stringify(aiVectorisePayload, null, 2) + "\n\n\n");
         const response = await fetch(openaiEmbeddingsEndpoint, {
             method: 'POST',
             headers: {
@@ -129,13 +136,13 @@ async function openAiEmbeddingsApiCall(message) {
         const data = await response.json();
 
         // Handle the data from the response
-        console.log("Open AI embedding response: " + JSON.stringify(data, null, 2));
+        //console.log("Open AI embedding response: " + JSON.stringify(data, null, 2));
+        console.log("Response recieved from OpenAI embeddings");
 
         // Put the embeddings response into the payload for the next cal
         aiSearchPayload.vectorQueries[0].vector = data.data[0].embedding;
 
-        console.log("aiSearchPayload: " + JSON.stringify(data, null, 2));
-
+        //console.log("aiSearchPayload: " + JSON.stringify(aiSearchPayload, null, 2));
 
     } catch (error) {
         console.error('Fetch error:', error);
@@ -143,8 +150,36 @@ async function openAiEmbeddingsApiCall(message) {
 
 }
 
-function callAzureSearch(query) {
+async function callAzureSearch() {
     // Make API request to Azure Cognitive Search
+    try {
+        console.log("\n\nCalling AI Search with the payload: " + JSON.stringify(aiSearchPayload, null, 2) + "\n\n\n");
+        const response = await fetch(azureSearchEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': azureSearchApiKey,
+            },
+            body: JSON.stringify(aiSearchPayload),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Handle the data from the response
+        console.log("AI search response: " + JSON.stringify(data, null, 2));
+
+        // TODO map the search data into the completions object to fulfil RAG
+
+        console.log("aiSearchPayload: " + JSON.stringify(data, null, 2));
+
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+
     // Handle the response and update chat history
 }
 

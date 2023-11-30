@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Bot</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div id="chat-container">
+    <div id="container">
         <div id="chat-history"></div>
-        <div id="user-input">
-            <input type="text" id="input-message" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
+
+        <div id="loading-message">Loading...</div>
+
+        <div class="form-row">
+            <div class="input-data">
+                <div id="user-input">
+                    <form id="myForm">
+                    <input type="text" id="input-message" placeholder="Type your message..." width="100%"/>
+                    <!--div class="input-data"> 
+                        <button onclick="sendMessage()" >Send</button>
+                    </div-->
+                </form>
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevents the default form submission behavior
+            //alert('Form submitted!');
+            // Add your form submission logic here
+            sendMessage();
+        });
+    </script>
 </body>
+
 </html>

@@ -7,8 +7,6 @@ const openaiEmbeddingsApiKey = '81b698241e364fc2aef4c3a0a40c05a9';
 const azureSearchEndpoint = 'https://ai-search-tsc.search.windows.net/indexes/hotels-vector-quickstart/docs/search?api-version=2023-11-01';
 const azureSearchApiKey = 'Cd1qBeD9EmhiZjC1dMeHneoVlmKV08pp5sCaONltTtAzSeBYUp1V';
 
-
-
 const openAiPayload = {
     "model": "gpt-4",
     "messages": [
@@ -43,6 +41,8 @@ const aiSearchPayload = {
 
 var aiSearchResponse = {}
 
+var citations = "No citations found for response.";
+
 const loadingMessage = document.getElementById('loading-message');
 
 async function sendMessage() {
@@ -66,22 +66,32 @@ async function sendMessage() {
     await callAzureSearch();
 
 
-    // TODO - update the payload with some context from the AI Search call
+    // Update the payload with some context from the AI Search call
     updateOpenaiPayloadChatHistory("system", "Use the provided articles delimited by ### to answer questions. If the answer cannot be found in the articles, write \"I could not find an answer.\"")
 
     // Access the "value" array in the JSON
     const results = aiSearchResponse.value;
 
     var chat_context_article = "";
+
+    // Reset the citations:
+    citations = " ";
+    console.log("Citations reset... Citations text: " + citations);
+
+    if (results.length === null || results.length === 0) {
+        citations = "No citations found for response.";
+    }
+
+
     // Loop through each search result and map the description to the open ai chat payload
     for (const result of results) {
         //const description = result.Description;
         //console.log(description);
         // TODO make this generic so it is not tightly coupled to the json results from search...
         chat_context_article += "Hotel name: " + result.HotelName + ". " + result.Description + "###";
-  
+        citations += "<div><p><b>" + result.HotelName + "</b><br/>" + result.Description + "</p></div>";
     }
-    updateOpenaiPayloadChatHistory("user", chat_context_article)
+    updateOpenaiPayloadChatHistory("system", chat_context_article); // TODO what is the best way to mark this as reference infomation? assistant, system or user?
 
     // Call OpenAI API for response
     await callOpenAI(userInput);
@@ -100,12 +110,11 @@ async function callOpenAI(userInput) {
     updateChatHistory('<b>Chat bot:</b> ' + reply);
     updateOpenaiPayloadChatHistory("assistant", reply);
     hideLoadingMessage();
-
 }
 
 async function openAiApiCall() {
     try {
-        //console.log("\n\nCalling OpenAI with the payload: " + JSON.stringify(openAiPayload, null, 2) + "\n\n\n");
+        console.log("\n\nCalling OpenAI with the payload: " + JSON.stringify(openAiPayload, null, 2) + "\n\n\n");
         const response = await fetch(openaiEndpoint, {
             method: 'POST',
             headers: {
@@ -126,6 +135,13 @@ async function openAiApiCall() {
 
         // Extract the text value of the "content" field
         const contentText = data.choices[0].message.content;
+
+        // Reset the openAiPayload but TODO do we need to keep the chat history? 
+        // openAiPayload.messages = [];
+        // Remove elements with role value of "system", so the chat values and responses are presevered but the previous RAG search results are removed. 
+        openAiPayload.messages = openAiPayload.messages.filter(item => item.role !== "system");
+        // TODO test with a larger search base that goes beyond just hotels...
+
         return contentText;
 
     } catch (error) {
@@ -187,7 +203,7 @@ async function callAzureSearch() {
         const data = await response.json();
 
         // Handle the data from the response
-        // console.log("AI search response: " + JSON.stringify(data, null, 2));
+        console.log("AI search response: " + JSON.stringify(data, null, 2));
 
         // Map the response data to a global var
         aiSearchResponse = data;

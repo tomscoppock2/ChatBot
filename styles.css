@@ -6,6 +6,28 @@ body {
   color: #fff;
 }
 
+
+/* Default link styling */
+a {
+  color: #fff; /* Link color */
+  text-decoration: none; /* Remove underline by default */
+}
+
+/* Hover state for the link */
+a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Visited state for the link */
+a:visited {
+  color: #fff; /* Visited link color */
+}
+
+/* Active state for the link (when clicked) */
+a:active {
+  color: #FFC600; /* Active link color */
+}
+
 .fixed-header {
   position: fixed;
   top: 0;
@@ -76,11 +98,11 @@ body {
 }
 
 #chat-container {
-  width: 100%
+  width: 100%;
 }
 
 #chatForm {
-  width: 100%
+  width: 100%;
 }
 
 /******************************************
@@ -127,4 +149,30 @@ body {
   50% {
     opacity: 1;
   }
+}
+
+
+
+
+/******************************************
+* Hide citations by default
+******************************************/
+#citations {
+  display: none; /* Hide the citations by default */
+  margin-top: 10px; /* Add some spacing between link and citations */
+}
+
+.citations-container {
+  text-align: right !important;
+  min-width: 100%; 
+}
+
+
+/******************************************
+* Style the contents of the chat container
+******************************************/
+#stacker-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 100%; 
 }

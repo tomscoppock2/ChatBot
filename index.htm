@@ -14,19 +14,25 @@
     </header>
     <div class="container">
         <div class="top-row">
-            <div class="text-element left-row"><br/></div>
+            <div class="text-element left-row"><br /></div>
             <div class="text-element center-row">
-
-                <div id="chat-container">
-                    <div id="chat-history"></div>
-                    <div id="loading-message">Loading...</div>
+                <div id="stacker-container">
+                    <div id="chat-container">
+                        <div id="chat-history"></div>
+                        <div id="loading-message">Loading...</div>
+                    </div>
+                    <br>
+                    <div class="citations-container">
+                        <a href="#" id="toggleLink">Show/Hide Citations</a>
+                        <div id="citationsDisplay"></div>
+                    </div>
                 </div>
             </div>
-            <div class="text-element right-row"><br/></div>
+            <div class="text-element right-row"><br /></div>
         </div>
         <div class="bottom-row">
             <div class="left-row">
-                <span><br/></span>
+                <span><br /></span>
             </div>
             <div class="center-row">
                 <form id="chatForm">
@@ -34,7 +40,7 @@
                 </form>
             </div>
             <div class="right-row">
-                <span><br/></span>
+                <span><br /></span>
             </div>
         </div>
     </div>
@@ -46,6 +52,25 @@
             // Form submission logic:
             sendMessage();
         });
+
+
+        // JavaScript to toggle the visibility of citations
+        const toggleLink = document.getElementById('toggleLink');
+        const citationsDiv = document.getElementById('citationsDisplay');
+
+        let citationsVisible = false;
+
+        toggleLink.addEventListener('click', function() {
+            citationsVisible = !citationsVisible;
+
+            if (citationsVisible) {
+                citationsDiv.innerHTML = citations;
+                citationsDiv.style.display = 'block';
+            } else {
+                citationsDiv.style.display = 'none';
+            }
+        });
+
     </script>
 </body>
 

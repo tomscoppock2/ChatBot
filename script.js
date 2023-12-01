@@ -1,4 +1,4 @@
-// Replace 'YOUR_OPENAI_API_KEY' and 'YOUR_AZURE_SEARCH_ENDPOINT' with your actual API key and endpoint
+// TODO - externalise these into an .env file that is not uploaded to GitHub
 const openaiApiKey = 'c7af92af1357428cb38974db24462ad6';
 const openaiEndpoint = 'https://sew-openai.openai.azure.com/openai/deployments/SEW-Gpt-4/chat/completions?api-version=2023-05-15';
 const openaiEmbeddingsEndpoint = 'https://openaikofaxtest1.openai.azure.com/openai/deployments/embeddings/embeddings?api-version=2023-08-01-preview';
@@ -57,7 +57,7 @@ async function sendMessage() {
     displayLoadingMessage();
 
     // Add user message to chat history
-    updateChatHistory('User: ' + userInput);
+    updateChatHistory('<b>User:</b> ' + userInput);
 
     // Call OpenAI API for Embeddings
     await openAiEmbeddingsApiCall(userInput);
@@ -97,7 +97,7 @@ async function callOpenAI(userInput) {
 
     // Call Open AI
     var reply = await openAiApiCall();
-    updateChatHistory('Kofax bot: ' + reply);
+    updateChatHistory('<b>Chat bot:</b> ' + reply);
     updateOpenaiPayloadChatHistory("assistant", reply);
     hideLoadingMessage();
 

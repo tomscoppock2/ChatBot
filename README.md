@@ -1,4 +1,16 @@
-Creating a web chat bot interface that interacts with OpenAI on Azure and utilizes Cognitive Search for Retrieval Augmented Generation involves several steps. Below is a general outline to guide you through the process:
+Creating a web chat bot interface that interacts with OpenAI on Azure and utilizes Cognitive Search for Retrieval Augmented Generation involves several steps.
+
+The chat bot is set up to work with the hotel sample, in the Microsoft Learn training: 
+https://learn.microsoft.com/en-us/azure/search/search-get-started-rest
+Download and run the postman project to set up this search database, then update the endpoints and API key in the script file.
+"QuickstartVectors 2023-11-01"
+Also see:
+https://learn.microsoft.com/en-us/azure/search/search-get-started-vector
+
+IMPORTANT NOTE: This code is to illustrate how to use the RAG pattern using OpenAI. The code is not secure and should not be deployed to publicly accessible websites as the API keys are available in plain text.
+
+
+Below is a general outline to guide you through the process:
 1. Set Up Azure Resources:
 
     Create Azure Account:

@@ -1,11 +1,11 @@
 // TODO - externalise these into an .env file that is not uploaded to GitHub
-const openaiApiKey = 'c7af92af1357428cb38974db24462ad6';
+const openaiApiKey = 'OPEN_AI_API_KEY_HERE';
 const openaiEndpoint = 'https://sew-openai.openai.azure.com/openai/deployments/SEW-Gpt-4/chat/completions?api-version=2023-05-15';
 const openaiEmbeddingsEndpoint = 'https://openaikofaxtest1.openai.azure.com/openai/deployments/embeddings/embeddings?api-version=2023-08-01-preview';
-const openaiEmbeddingsApiKey = '81b698241e364fc2aef4c3a0a40c05a9';
+const openaiEmbeddingsApiKey = 'OPEN_AI_EMBEDDINGS_API_KEY_HERE';
 
 const azureSearchEndpoint = 'https://ai-search-tsc.search.windows.net/indexes/hotels-vector-quickstart/docs/search?api-version=2023-11-01';
-const azureSearchApiKey = 'Cd1qBeD9EmhiZjC1dMeHneoVlmKV08pp5sCaONltTtAzSeBYUp1V';
+const azureSearchApiKey = 'SEARCH_API_KEY_HERE';
 
 const openAiPayload = {
     "model": "gpt-4",
